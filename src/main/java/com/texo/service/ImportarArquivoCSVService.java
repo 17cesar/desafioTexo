@@ -1,5 +1,6 @@
 package com.texo.service;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -40,7 +41,7 @@ public class ImportarArquivoCSVService {
 		@PostConstruct
 	    @Transactional
 	    public void importarDadosArquivo() throws URISyntaxException, IOException {
-			
+	        
 			ClassPathResource classPathResource = new ClassPathResource("movielist.csv");
 	        Reader reader = new InputStreamReader(classPathResource.getInputStream());
 	        

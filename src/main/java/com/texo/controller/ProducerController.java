@@ -2,7 +2,9 @@ package com.texo.controller;
 
 import java.util.List;
 
+import com.texo.VH.ProducerWinVH;
 import com.texo.model.Producer;
+import com.texo.service.MovieService;
 import com.texo.service.ProducerService;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -18,9 +20,17 @@ public class ProducerController {
 	@Autowired
     private ProducerService producerService;
 	
-	@GetMapping("/listarTodos")
+	@Autowired
+	MovieService movieService;
+	
+	@GetMapping("/listAll")
 	public ResponseEntity<List<Producer>> listarTodos(){
 		return ResponseEntity.ok(producerService.listarTodos());
 	}
-
+	
+	@GetMapping("/winners-breaks")
+	public ResponseEntity<ProducerWinVH> listarGanhadoresPremio(){
+		return ResponseEntity.ok(movieService.listarGanhadorIntervalo());
+	}
+	
 }

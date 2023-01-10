@@ -34,7 +34,7 @@ public class MovieService {
     	return movieRepository.findByWinner(Boolean.TRUE);
     }
     
-    public ProducerWinVH listarProducerMaisPremio(){
+    public ProducerWinVH listarGanhadorIntervalo(){
     	
     	List<Movie> listMovieWins = listarGanhadoresPremio();
     	
