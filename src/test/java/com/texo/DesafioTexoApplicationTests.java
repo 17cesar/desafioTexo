@@ -8,6 +8,7 @@ class DesafioTexoApplicationTests {
 
 	@Test
 	void contextLoads() {
+		System.out.println("Aqui doido!!!");
 	}
 
 }

@@ -58,7 +58,7 @@ public class MovieService {
     private List<ProducerWin> listarProducerWinMin(Map<Producer, Long> mapProducer){
     	List<ProducerWin> listWin = new ArrayList<ProducerWin>();
     	for(Producer producer : mapProducer.keySet()){
-    		listWin.add(validarIncluirProducerWin(producer,Boolean.TRUE));
+    		listWin.addAll(validarIncluirProducerWin(producer,Boolean.TRUE));
     	}
     	
     	IntSummaryStatistics summary = listWin.stream().collect(Collectors.summarizingInt(ProducerWin::getInterval));
@@ -69,7 +69,7 @@ public class MovieService {
     private List<ProducerWin> listarProducerWinMax(Map<Producer, Long> mapProducer){
     	List<ProducerWin> listWin = new ArrayList<ProducerWin>();
     	for(Producer producer : mapProducer.keySet()){
-    		listWin.add(validarIncluirProducerWin(producer,Boolean.FALSE));
+    		listWin.addAll(validarIncluirProducerWin(producer,Boolean.FALSE));
     	}
     	
     	IntSummaryStatistics summary = listWin.stream().collect(Collectors.summarizingInt(ProducerWin::getInterval));
@@ -77,29 +77,22 @@ public class MovieService {
     	return listWin.stream().filter(win -> win.getInterval().equals(summary.getMax()) && win.getInterval() > 0).collect(Collectors.toList());
     }
     
-    private ProducerWin validarIncluirProducerWin(Producer producer , Boolean min) {
-    	ProducerWin producerWin = new ProducerWin();
-    	producerWin.setProducer(producer.getNome());
-    	List<Movie> listMovie = movieRepository.findByProducersAndWinner(producer , Boolean.TRUE);
-    	if(min) {
-    		producerWin.setPreviousWin(listMovie.get(0).getYear().toString());
-    		producerWin.setFollowingWin(listMovie.get(1).getYear().toString());
-    		producerWin.setInterval((listMovie.get(1).getYear() - listMovie.get(0).getYear()));
-    		
-    	}else {
-    		if(listMovie.size() >=4 &&
-    		premioConsecutivo(listMovie.get(0).getYear() , listMovie.get(1).getYear()) &&
-    		premioConsecutivo(listMovie.get(2).getYear() , listMovie.get(3).getYear())) {
-    			producerWin.setPreviousWin(listMovie.get(0).getYear().toString().concat("/").concat(listMovie.get(1).getYear().toString()));
-        		producerWin.setFollowingWin(listMovie.get(2).getYear().toString().concat("/").concat(listMovie.get(3).getYear().toString()));
-        		producerWin.setInterval((listMovie.get(2).getYear() - listMovie.get(1).getYear()));
-    		}	
-    	}
-    	return producerWin;
-    }
+    private Integer qtd;
     
-    private Boolean premioConsecutivo(Integer anoInicial , Integer anoFinal) {
-    	return ((anoFinal - anoInicial) == 1);
+    private List<ProducerWin> validarIncluirProducerWin(Producer producer , Boolean min) {
+    	this.qtd = 0;
+    	List<ProducerWin> wins = new ArrayList<ProducerWin>();
+    	List<Movie> listMovie = movieRepository.findByProducersAndWinner(producer , Boolean.TRUE);
+    	listMovie.stream().filter(a -> qtd < listMovie.size() -1 ).forEach(mov -> {
+    		ProducerWin producerWin = new ProducerWin();
+    		producerWin.setProducer(producer.getNome());
+    		producerWin.setPreviousWin(mov.getYear().toString());
+    		producerWin.setFollowingWin(listMovie.get(qtd + 1).getYear().toString());
+    		producerWin.setInterval((Integer.parseInt(producerWin.getFollowingWin()) - Integer.parseInt(producerWin.getPreviousWin())));
+    		this.qtd++;
+    		wins.add(producerWin);
+    	});
+    	return wins;
     }
 	
 }
